@@ -25,30 +25,34 @@ from Johns Hopkins and Westat
 
 **The planned analyses / visualizations / coding challenges:**
 
-*Outcomes*: Emotional well-being, Risk of depression using the PHQ
-depression scale
+*Outcomes*: Emotional well-being, or depression risk using the PHQ-2
+depression scale (derived with two variables, hc\[round\#\]depresan1 and
+hc\[round\#\]depresan2 that are summed)
 
-*Tentative predictors and covariates*: Social network, home environment
-(ex. mobility / assitive devices), physical capacity (ability to walk,
-lift, etc.), cognitive assessment (memory, at risk for dementia),
-driving and transportation, assistance with ADLs, demographic variables
-(age, race, education) - initial answers in round 1.
+*Tentative predictors and covariates*: Social network size, physical
+health score (derived from summed cardio exercise and walk variables),
+cognitive assessment (memory, at risk for dementia), assistance with
+ADLs like groceries and banking, demographic variables (age, race,
+education) - initial values for these in round 1 and 5.
 
 We would also like to visualize how the association between predictor(s)
-and outcomes change over time.
+and outcomes change over time, possibly using a growth curve model.
 
 **The planned timeline:**
 
--   November 13 by 1:00 pm Form a team and submit a proposal Written
+-   November 13 by 1:00 pm \| Form a team and submit a proposal Written
     proposal document
--   November 15, Group meeting to prepare / regroup
--   November 16-19 Project review meeting Zoom meeting – no
+-   November 16-19 \| Project review meeting Zoom meeting – no
     “deliverable”
--   December 11 by 4:00 pm Report Written report giving detailed project
-    description
--   December 11 by 4:00 pm Webpage and screencast Webpage overview of
+-   November 20 by 9:00 pm \| Data cleaning / initial analysis / initial
+    visuals
+-   November 27 by 9:00pm \| First check-in meeting
+-   December 05 by 9:00 pm \| Second check-in meeting
+-   December 11 by 4:00 pm \| Report Written report giving detailed
+    project description
+-   December 11 by 4:00 pm \| Webpage and screencast Webpage overview of
     project, with short explanatory video (published online)
--   December 11 by 8:00 pm Peer assessment Brief assessment of your
+-   December 11 by 8:00 pm \| Peer assessment Brief assessment of your
     teammates contributions (as a short document)
--   December 16 “In class” discussion of projects Enjoy hearing about
+-   December 16 \| “In class” discussion of projects Enjoy hearing about
     projects! (Also get hex stickers)
