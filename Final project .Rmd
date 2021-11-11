@@ -46,5 +46,5 @@ We would also like to visualize how the association between predictor(s) and out
 - December 11 by 4:00 pm	Report	Written report giving detailed project description
 - December 11 by 4:00 pm	Webpage and screencast	Webpage overview of project, with short explanatory video (published online)
 - December 11 by 8:00 pm	Peer assessment	Brief assessment of your teammates contributions (as a short document)
-- December 16	“In class” discussion of projects	Enjoy hearing about projects! (Also get hex stickers…)
+- December 16	“In class” discussion of projects	Enjoy hearing about projects! (Also get hex stickers)
 
