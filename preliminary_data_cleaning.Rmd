@@ -1,0 +1,28 @@
+---
+title: "preliminary_data_cleaning"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(p8105.datasets)
+library(httr)
+library(jsonlite)
+library(haven)
+```
+
+## Importing NHATS data and selecting only relevant variables
+
+Using only round 5 data
+
+```{r nhats}
+nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
+  select(spid, hc5depresan1, hc5depresan2, r5dgender, r5d2intvrage, rl5dracehisp, md5canewlker, 
+         sn5dnumsn, fl5noonetalk, cg5ofmemprob, is5reasnprx1, hc5health, wb5truestme4) %>%
+  janitor::clean_names() %>%
+  drop_na() 
+
+```
+
