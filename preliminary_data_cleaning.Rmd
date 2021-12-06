@@ -1,11 +1,13 @@
 ---
 title: "preliminary_data_cleaning"
 output: github_document
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
 library(haven)
 library(tidyverse)
+library(plotly)
 ```
 
 ## Importing NHATS data and selecting only relevant variables
@@ -17,6 +19,65 @@ nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
   select(spid, hc5depresan1, hc5depresan2, r5dgender, r5d2intvrage, rl5dracehisp, md5canewlker, 
          sn5dnumsn, fl5noonetalk, cg5ofmemprob, is5reasnprx1, hc5health, wb5truestme4) %>%
   janitor::clean_names()
+
+```
+
+Preliminary exploratory visualizations (need proper labels): 
+# for gender - 1 male, 2 female 
+# for age categories - 1 65-69, 2 70-74, 5 75-79, 4 80 - 84, 5 85-89, 6 90+
+# for racehisp  - 1 white non-hispanic, 2 black non-hispanic, 3 other non-hispanic, 4, hispanic, 5 more than one/dkrf primary
+
+```{r nhats_demo}
+
+gender_bar = 
+  nhats  %>%   
+  count(r5dgender) %>% 
+  mutate(r5dgender = as.factor(r5dgender),
+         r5dgender = fct_reorder(r5dgender, n)) %>% 
+  plot_ly(x = ~r5dgender, y = ~n, color = ~r5dgender, type = "bar", colors = "viridis") %>% 
+  layout(plot_bgcolor = "f8f8f8",
+         xaxis = list(title = "participant gender", tickfont = list(size = 11)), 
+         yaxis = list(title = "frequency"), 
+         title = "Gender",  
+         titlefont = list(size = 16),
+         showlegend = FALSE)
+
+age_bar = 
+  nhats  %>%   
+  filter(r5d2intvrage > 0) %>% 
+  count(r5d2intvrage) %>% 
+  mutate(r5d2intvrage = as.factor(r5d2intvrage),
+         r5d2intvrage = fct_reorder(r5d2intvrage, n)) %>% 
+  plot_ly(x = ~r5d2intvrage, y = ~n, color = ~r5d2intvrage, type = "bar", colors = "viridis") %>% 
+  layout(plot_bgcolor = "f8f8f8",
+         xaxis = list(title = "participant age", tickfont = list(size = 11)), 
+         yaxis = list(title = "frequency"), 
+         title = "Age",  
+         titlefont = list(size = 16),
+         showlegend = FALSE)
+
+race_bar = 
+  nhats  %>%   
+  filter(rl5dracehisp > 6) %>% 
+  count(rl5dracehisp) %>% 
+  mutate(rl5dracehisp = as.factor(rl5dracehisp),
+         rl5dracehisp = fct_reorder(rl5dracehisp, n)) %>% 
+  plot_ly(x = ~rl5dracehisp, y = ~n, color = ~rl5dracehisp, type = "bar", colors = "viridis") %>% 
+  layout(plot_bgcolor = "f8f8f8",
+         xaxis = list(title = "participant race/ethnicity", tickfont = list(size = 11)), 
+         yaxis = list(title = "frequency"), 
+         title = "Race/Ethnicity",  
+         titlefont = list(size = 16),
+         showlegend = FALSE)
+
+demo_bar = subplot(gender_bar, age_bar, race_bar, nrows = 3) %>%
+  layout(xaxis3 = list(title = "categories"), 
+         yaxis2 = list(title = "frequency"),
+         title = list(text = "Demographic frequencies"), 
+         titlefont = list(size = 14),
+         legend = list(font = list(size = 10)))
+
+demo_bar 
 
 ```
 
