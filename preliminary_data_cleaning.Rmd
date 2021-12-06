@@ -137,7 +137,7 @@ snsize_scatter
 
 ```
 
-Plotting social network by phq_cat:
+Plotting social network and health by phq_cat:
 
 ```{r}
 sn_phq = nhats %>% 
@@ -150,6 +150,18 @@ sn_phq = nhats %>%
     scale_y_continuous(labels = scales::percent)
 
 ggplotly(sn_phq)
+
+health_phq = nhats %>% 
+  filter(hc5health > 0) %>%
+  ggplot(aes(x = hc5health, group = phq_cat)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
+    geom_text(aes( label = scales::percent(round(..prop.., 3)),
+                   y = ..prop.. ), stat = "count", vjust = -.3, size = 2.5) +
+    labs(y = "Percent", fill = "SN") +
+    facet_grid(~phq_cat) +
+    scale_y_continuous(labels = scales::percent)
+
+ggplotly(health_phq)
 ```
 
 
