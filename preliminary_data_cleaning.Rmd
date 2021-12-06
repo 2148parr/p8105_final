@@ -92,16 +92,48 @@ demo_bar
 
 ```
 
-Attempting plotting of predictors-- this code doesn't work, but basically hoping to plot n of phq values rather than sum and the different snsize categories
+Attempting plotting of social network size predictor against PHQ-2, stratified by race (EM)
 
 ```{r nhats_prectict}
 
-#nhats %>%   
- # mutate(phq.total = as.factor(phq.total),
-  #       phq.total = fct_reorder(phq.total, n)) %>% 
-#  ungroup() %>%
- # plot_ly(x = ~sn5dnumsn, y = ~n, color = ~sn5dnumsn, type = "bar",  name = "Social network size and PHQ-2 score") %>% 
-  #layout(plot_bgcolor = "fffefa") 
+sn_white = 
+  nhats %>%   filter(r5d2intvrage == 1 ) %>% 
+  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+          mode = "markers", marker = list(color = "red")) %>% 
+  layout(plot_bgcolor = "fffefa") 
+
+sn_black = 
+  nhats %>%   filter(r5d2intvrage == 2 ) %>% 
+  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+          mode = "markers", marker = list(color = "red")) %>% 
+  layout(plot_bgcolor = "fffefa") 
+
+sn_other = 
+  nhats %>%   filter(r5d2intvrage == 3 ) %>% 
+  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+          mode = "markers", marker = list(color = "red")) %>% 
+  layout(plot_bgcolor = "fffefa") 
+
+sn_hisp = 
+  nhats %>%   filter(r5d2intvrage == 4 ) %>% 
+  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+          mode = "markers", marker = list(color = "red")) %>% 
+  layout(plot_bgcolor = "fffefa") 
+
+sn_more = 
+  nhats %>%   filter(r5d2intvrage == 5 ) %>% 
+  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+          mode = "markers", marker = list(color = "red")) %>% 
+  layout(plot_bgcolor = "fffefa") 
+
+snsize_scatter = subplot(sn_white, sn_black, sn_other, sn_hisp, sn_more, nrows = 5) %>%
+  layout(xaxis3 = list(title = "social network size"), 
+         yaxis2 = list(title = "PHQ-2"),
+         title = list(text = "Social network size and PHQ-2 score"), 
+         titlefont = list(size = 14),
+         legend = list(font = list(size = 10)))
+
+snsize_scatter 
 
 ```
 
