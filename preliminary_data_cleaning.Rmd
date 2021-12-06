@@ -30,7 +30,7 @@ nhats %>%
 
 nhats = nhats %>%
   mutate(phq.total = phq.total - 2) %>% 
-  mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression"))
+  mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression")) 
 
 ```
 
