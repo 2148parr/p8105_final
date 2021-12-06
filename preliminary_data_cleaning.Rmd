@@ -16,6 +16,12 @@ Using only round 5 data, included ID variable, the two variables needed for the 
 
 In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3), while scores provided in our data ranged from 1-4. Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
 
+<<<<<<< HEAD
+=======
+cut- if dementia is reason for a proxy (note this variable is only relevant for people who have a proxy, so we can't omit missing/NA for this variable 
+
+
+>>>>>>> 3c3370af2362aadf90dd179ef76a6189af8d3676
 ```{r nhats}
 nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
   select(spid, hc5depresan1, hc5depresan2, r5dgender, r5d2intvrage, rl5dracehisp, md5canewlker, 
@@ -72,7 +78,7 @@ age_bar =
 
 race_bar = 
   nhats  %>%   
-  filter(rl5dracehisp > 6) %>% 
+  filter(rl5dracehisp > 0) %>% 
   count(rl5dracehisp) %>% 
   mutate(rl5dracehisp = as.factor(rl5dracehisp),
          rl5dracehisp = fct_reorder(rl5dracehisp, n)) %>% 
@@ -120,7 +126,7 @@ sn_other =
 sn_hisp = 
   nhats %>%   filter(rl5dracehisp == 4 ) %>% 
   plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
-          mode = "markers", marker = list(color = "purple")) %>% 
+          mode = "markers", marker = list(color = "orange")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 
