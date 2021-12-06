@@ -22,7 +22,7 @@ nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
   select(spid, hc5depresan1, hc5depresan2, r5dgender, r5d2intvrage, rl5dracehisp, md5canewlker, 
          sn5dnumsn, fl5noonetalk, cg5ofmemprob, is5reasnprx1, hc5health, wb5truestme4) %>%
   janitor::clean_names() %>%   
-  filter(hc5depresan1 > 0, hc5depresan2 > 0)
+  filter(hc5depresan1 > 0, hc5depresan2 > 0, sn5dnumsn >= 0)
 
 nhats %>% 
   select(hc5depresan1, hc5depresan2)  %>% 
@@ -88,4 +88,18 @@ demo_bar = subplot(gender_bar, age_bar, race_bar, nrows = 3) %>%
 demo_bar 
 
 ```
+
+Attempting plotting of predictors-- this code doesn't work, but basically hoping to plot n of phq values rather than sum and the different snsize categories
+
+```{r nhats_prectict}
+
+#nhats %>%   
+ # mutate(phq.total = as.factor(phq.total),
+  #       phq.total = fct_reorder(phq.total, n)) %>% 
+#  ungroup() %>%
+ # plot_ly(x = ~sn5dnumsn, y = ~n, color = ~sn5dnumsn, type = "bar",  name = "Social network size and PHQ-2 score") %>% 
+  #layout(plot_bgcolor = "fffefa") 
+
+```
+
 
