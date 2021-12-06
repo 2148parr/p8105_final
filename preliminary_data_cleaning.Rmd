@@ -14,7 +14,7 @@ library(plotly)
 
 Using only round 5 data, included ID variable, the two variables needed for the depression risk scale (PHQ-2), gender, age, race, whether participant uses mobility devices, size of social network, whether or not they have no one to talk to, self reported memory issues causing problems, if dementia is reason for a proxy (note this variable is only relevant for people who have a proxy, so we can't omit missing/NA for this variable), self-rated health, and whether they are happy with their living situation. 
 
-
+In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3), while scores provided in our data ranged from 1-4. Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
 
 
 ```{r nhats}
@@ -29,6 +29,7 @@ nhats %>%
   rowSums(na.rm = TRUE) -> nhats$phq.total
 
 nhats = nhats %>%
+  mutate(phq.total = phq.total - 2) %>% 
   mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression"))
 
 ```
