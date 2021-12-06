@@ -29,7 +29,7 @@ nhats %>%
 
 nhats = nhats %>%
   mutate(phq.total = phq.total - 2) %>% 
-  mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression")) %>%
+  mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression")) %>% 
   mutate(
     gender = recode(r5dgender, `1` = "Male", `2` = "Female"),
     gender = as.factor(gender)
@@ -100,39 +100,34 @@ Attempting plotting of social network size predictor against PHQ-2, stratified b
 ```{r nhats_prectict}
 
 sn_white = 
-  nhats %>%   filter(r5d2intvrage == 1 ) %>% 
+  nhats %>%   filter(rl5dracehisp == 1 ) %>% 
   plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
           mode = "markers", marker = list(color = "red")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 sn_black = 
-  nhats %>%   filter(r5d2intvrage == 2 ) %>% 
+  nhats %>%   filter(rl5dracehisp == 2 ) %>% 
   plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
-          mode = "markers", marker = list(color = "red")) %>% 
+          mode = "markers", marker = list(color = "blue")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 sn_other = 
-  nhats %>%   filter(r5d2intvrage == 3 ) %>% 
+  nhats %>%   filter(rl5dracehisp == 3 ) %>% 
   plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
-          mode = "markers", marker = list(color = "red")) %>% 
+          mode = "markers", marker = list(color = "green")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 sn_hisp = 
-  nhats %>%   filter(r5d2intvrage == 4 ) %>% 
+  nhats %>%   filter(rl5dracehisp == 4 ) %>% 
   plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
-          mode = "markers", marker = list(color = "red")) %>% 
+          mode = "markers", marker = list(color = "purple")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
-sn_more = 
-  nhats %>%   filter(r5d2intvrage == 5 ) %>% 
-  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
-          mode = "markers", marker = list(color = "red")) %>% 
-  layout(plot_bgcolor = "fffefa") 
 
-snsize_scatter = subplot(sn_white, sn_black, sn_other, sn_hisp, sn_more, nrows = 5) %>%
-  layout(xaxis3 = list(title = "social network size"), 
+snsize_scatter = subplot(sn_white, sn_black, sn_other, sn_hisp, nrows = 4) %>%
+  layout(xaxis4 = list(title = "social network size"), 
          yaxis2 = list(title = "PHQ-2"),
-         title = list(text = "Social network size and PHQ-2 score"), 
+         title = list(text = "Social network size and PHQ-2 score distribution"), 
          titlefont = list(size = 14),
          legend = list(font = list(size = 10)))
 
