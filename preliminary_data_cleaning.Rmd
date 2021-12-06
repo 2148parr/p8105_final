@@ -12,9 +12,11 @@ library(plotly)
 
 ## Importing NHATS data and selecting only relevant variables
 
-Using only round 5 data, included ID variable, the two variables needed for the depression risk scale (PHQ-2), gender, age, race, whether participant uses mobility devices, size of social network, whether or not they have no one to talk to, self reported memory issues causing problems, if dementia is reason for a proxy (note this variable is only relevant for people who have a proxy, so we can't omit missing/NA for this variable), self-rated health, and whether they are happy with their living situation. 
+Using only round 5 data, included ID variable, the two variables needed for the depression risk scale (PHQ-2), gender, age, race, whether participant uses mobility devices, size of social network, whether or not they have no one to talk to, self reported memory issues causing problems, self-rated health, and whether they are happy with their living situation. 
 
 In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3), while scores provided in our data ranged from 1-4. Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
+
+cut- if dementia is reason for a proxy (note this variable is only relevant for people who have a proxy, so we can't omit missing/NA for this variable 
 
 
 ```{r nhats}
@@ -70,7 +72,7 @@ age_bar =
 
 race_bar = 
   nhats  %>%   
-  filter(rl5dracehisp > 6) %>% 
+  filter(rl5dracehisp > 0) %>% 
   count(rl5dracehisp) %>% 
   mutate(rl5dracehisp = as.factor(rl5dracehisp),
          rl5dracehisp = fct_reorder(rl5dracehisp, n)) %>% 
@@ -118,7 +120,7 @@ sn_other =
 sn_hisp = 
   nhats %>%   filter(rl5dracehisp == 4 ) %>% 
   plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
-          mode = "markers", marker = list(color = "purple")) %>% 
+          mode = "markers", marker = list(color = "orange")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 
