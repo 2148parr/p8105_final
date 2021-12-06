@@ -28,6 +28,9 @@ nhats %>%
   select(hc5depresan1, hc5depresan2)  %>% 
   rowSums(na.rm = TRUE) -> nhats$phq.total
 
+nhats = nhats %>%
+  mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression"))
+
 ```
 
 Preliminary exploratory visualizations (need proper labels): 
@@ -100,6 +103,21 @@ Attempting plotting of predictors-- this code doesn't work, but basically hoping
  # plot_ly(x = ~sn5dnumsn, y = ~n, color = ~sn5dnumsn, type = "bar",  name = "Social network size and PHQ-2 score") %>% 
   #layout(plot_bgcolor = "fffefa") 
 
+```
+
+Plotting social network by phq_cat:
+
+```{r}
+sn_phq = nhats %>% 
+  ggplot(aes(x = sn5dnumsn, group = phq_cat)) + 
+    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
+    geom_text(aes( label = scales::percent(round(..prop.., 3)),
+                   y = ..prop.. ), stat = "count", vjust = -.3, size = 2.5) +
+    labs(y = "Percent", fill = "SN") +
+    facet_grid(~phq_cat) +
+    scale_y_continuous(labels = scales::percent)
+
+ggplotly(sn_phq)
 ```
 
 
