@@ -16,6 +16,18 @@ Using only round 5 data, included ID variable, the two variables needed for the 
 
 In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3, while scores for the two items provided in our data ranged from 1-4). Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
 
+Categorical variables were recoded to include descriptions of values and converted into factors.
+
+The following variables will be included in analyses:
+
+* `gender`: Gender (Male, Female)
+* `age_cat`: Categorical age at interview (65 to 69, 70 to 74, 75 to 79, 80-84, 85-89, 90+)
+* `race_ethnicity`: Race and hispanic ethnicity (White, non-hispanic; Black, non-hispanic; Other, non-Hispanic; Hispanic)
+* `cane_walker_wheelchair`: Used cane, walker, wheelchair (Yes, No)
+* `memory`: Rate your memory (Excellent, Very Good, Good, Fair, Poor)
+* `overall_health`: Overall health condition (Excellent, Very Good, Good, Fair, Poor)
+* `likes_living_situation`: Likes living situation (Agree a lot, Agree a little, Agree not at all)
+
 ```{r nhats}
 nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
   select(spid, hc5depresan1, hc5depresan2, r5dgender, r5d2intvrage, rl5dracehisp, md5canewlker, 
@@ -33,14 +45,13 @@ nhats = nhats %>%
   mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression")) %>% 
   mutate(
     gender = recode(r5dgender, `1` = "Male", `2` = "Female"),
-    gender = as.factor(gender),
+    gender = factor(gender),
     age_cat = recode(r5d2intvrage, `1` = "65 to 69", `2` = "70 to 74", `3` = "75 to 79", 
                  `4` = "80 to 84", `5` = "85 to 89", `6` = "90+"),
     age_cat = factor(age_cat, levels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", 
                   "85 to 89", "90+"), ordered = TRUE),
     race_ethnicity = recode(rl5dracehisp, `1` = "White, non-hispanic", `2` = "Black, non-hispanic", 
-                  `3` = "Other, non-hispanic", `4` = "Hispanic", `5` = "More than one DKRF primary", 
-                  `6` = "DKRF"),
+                  `3` = "Other, non-hispanic", `4` = "Hispanic"),
     race_ethnicity = factor(race_ethnicity),
     cane_walker_wheelchair = recode(md5canewlker, `1` = "Yes", `2` = "No"),
     cane_walker_wheelchair = factor(cane_walker_wheelchair),
