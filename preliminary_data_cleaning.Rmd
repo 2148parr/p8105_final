@@ -186,3 +186,53 @@ ggplotly(health_phq)
 ```
 
 
+### Plotting memory x depression outcomes
+ *onyeka*
+
+```{r}
+mem_plot = nhats %>%  mutate(
+                          phq_cat = factor(phq_cat),
+                          cane_walker_cat = factor(md5canewlker),
+                          noone_talk = factor(fl5noonetalk),
+                          mem_probs = factor(cg5ofmemprob)) %>% group_by(phq_cat, mem_probs) %>% 
+  summarise(n = n()) %>% mutate(
+  proportion = (n / sum(n))
+  )
+
+  memory_plot = mem_plot %>%  ggplot(aes(x = mem_probs, y = proportion, group= phq_cat)) + 
+    geom_line()  +  
+   geom_point(alpha = 0.5, color = "red") + 
+    facet_grid(~phq_cat) + 
+    labs( title = "Severity of memory problems and Depression outcomes",
+      x = "Severity level of problems with memory", y = " Proportion of respondents")+  
+    scale_x_discrete(
+      labels = c("Everyday","Most days","Some days","Rarely","Never")) + 
+    scale_y_continuous(labels = scales::percent)
+  
+  ggplotly(memory_plot)
+```
+
+
+### plotting cane walker use *onyeka*
+```{r}
+cane_plot = nhats %>%  
+  mutate(
+    cane_walker_cat = factor(md5canewlker)) %>% 
+    filter(cane_walker_cat != -8) %>%  
+    group_by(phq_cat, cane_walker_cat) %>% 
+    summarise(n = n()) %>%  
+    mutate(
+        proportion = (n / sum(n)))
+
+canewalker_plot = cane_plot %>%  
+ggplot(aes(x = cane_walker_cat, y =proportion)) + 
+  geom_col(fill= "light blue") + facet_grid(~phq_cat)+
+  labs( title = "Use of cane walker wheelchair and depression outcomes",
+      x = "Asked if used a cane walker wheel chair", y = " Proportion of respondents")+  
+    scale_x_discrete(
+      labels = c("Yes","No")) + 
+    scale_y_continuous(labels = scales::percent)
+
+  ggplotly(canewalker_plot)
+```
+
