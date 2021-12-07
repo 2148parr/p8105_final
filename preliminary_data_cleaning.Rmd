@@ -28,10 +28,14 @@ The following variables will be included in analyses:
 * `overall_health`: Overall health condition (Excellent, Very Good, Good, Fair, Poor)
 * `likes_living_situation`: Likes living situation (Agree a lot, Agree a little, Agree not at all)
 
+The outcome variable of interest is:
+
+*`PHQ-cat`: Depression (dichotomized based on total PHQ-2 score)
+
 ```{r nhats}
 nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
   select(spid, hc5depresan1, hc5depresan2, r5dgender, r5d2intvrage, rl5dracehisp, md5canewlker, 
-         sn5dnumsn, cg5ratememry, hc5health, wb5truestme4, fl5noonetalk, cg5ofmemprob) %>%
+         sn5dnumsn, cg5ratememry, hc5health, wb5truestme4) %>%
   janitor::clean_names() %>%   
   filter(hc5depresan1 > 0, hc5depresan2 > 0, sn5dnumsn >= 0, r5d2intvrage > 0, md5canewlker > 0, 
          cg5ratememry > 0, hc5health > 0, wb5truestme4 > 0, rl5dracehisp < 5)
