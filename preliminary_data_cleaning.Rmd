@@ -22,7 +22,7 @@ nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
          sn5dnumsn, cg5ratememry, hc5health, wb5truestme4, fl5noonetalk, cg5ofmemprob) %>%
   janitor::clean_names() %>%   
   filter(hc5depresan1 > 0, hc5depresan2 > 0, sn5dnumsn >= 0, r5d2intvrage > 0, md5canewlker > 0, 
-         cg5ratememry > 0, hc5health > 0, wb5truestme4 > 0)
+         cg5ratememry > 0, hc5health > 0, wb5truestme4 > 0, rl5dracehisp < 5)
 
 nhats %>% 
   select(hc5depresan1, hc5depresan2)  %>% 
