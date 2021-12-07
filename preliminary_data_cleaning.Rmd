@@ -186,46 +186,40 @@ ggplotly(health_phq)
 ```
 
 
-### Plotting memory x depression outcomes
- *onyeka*
+####  Visualizing any differences in depression outcome by predictor, self-rated memory. 
+
+- Survey respondents were asked to rate their memory on a scale of 1-5, 1 being Excellent and 5 being Poor. This plot is a visualiztion of the proportion of respondents in this dataset by their depression outcome status - Mild/No Depression or Moderate/Severe Depression. The figure is broken down by how participants rated their memory (x-axis). 
 
 ```{r}
-mem_plot = nhats %>%  mutate(
-                          phq_cat = factor(phq_cat),
-                          cane_walker_cat = factor(md5canewlker),
-                          noone_talk = factor(fl5noonetalk),
-                          mem_probs = factor(cg5ofmemprob)) %>% group_by(phq_cat, mem_probs) %>% 
+mem_plot = nhats %>%  group_by(phq_cat, memory) %>% 
   summarise(n = n()) %>% mutate(
-  proportion = (n / sum(n))
-  )
+  proportion = (n / sum(n)))
 
-  memory_plot = mem_plot %>%  ggplot(aes(x = mem_probs, y = proportion, group= phq_cat)) + 
-    geom_line()  +  
-   geom_point(alpha = 0.5, color = "red") + 
+  memory_plot = mem_plot %>% mutate(memory = factor(memory)) %>% drop_na() %>%   
+    ggplot(aes(x = memory, y = proportion, group= phq_cat)) + geom_line(alpha = 0.4) +
+  
+    geom_point(alpha = 0.5, color = "red") + 
     facet_grid(~phq_cat) + 
-    labs( title = "Severity of memory problems and Depression outcomes",
-      x = "Severity level of problems with memory", y = " Proportion of respondents")+  
-    scale_x_discrete(
-      labels = c("Everyday","Most days","Some days","Rarely","Never")) + 
+    labs( title = "Self rated memory and depression outcomes",
+    x = "Self rated memory", y = " Proportion of respondents")+  
     scale_y_continuous(labels = scales::percent)
   
-  ggplotly(memory_plot)
+ggplotly(memory_plot)
 ```
 
 
-### plotting cane walker use *onyeka*
-```{r}
-cane_plot = nhats %>%  
-  mutate(
-    cane_walker_cat = factor(md5canewlker)) %>% 
-    filter(cane_walker_cat != -8) %>%  
-    group_by(phq_cat, cane_walker_cat) %>% 
-    summarise(n = n()) %>%  
-    mutate(
-        proportion = (n / sum(n)))
+####  Visualizing any differences in depression outcome by predictor, use of cane walker wheelchair. 
 
-canewalker_plot = cane_plot %>%  
-ggplot(aes(x = cane_walker_cat, y =proportion)) + 
+- Survey respondents were asked if they used a cane walker wheelchair. This plot is a visualization of the proportion of respondents in this dataset by their depression outcome status - Mild/No Depression or Moderate/Severe Depression. The figure is broken down by if participants responded Yes, or No (x-axis). 
+```{r}
+cane_walker_wc_plot = nhats %>%  
+    group_by(phq_cat, cane_walker_wheelchair) %>% 
+    summarise(n = n()) %>%  
+    mutate(proportion = (n / sum(n)))
+
+cane_walker_wc_plot = 
+  cane_walker_wc_plot %>%  
+  ggplot(aes(x = cane_walker_wheelchair, y =proportion)) + 
   geom_col(fill= "light blue") + facet_grid(~phq_cat)+
   labs( title = "Use of cane walker wheelchair and depression outcomes",
       x = "Asked if used a cane walker wheel chair", y = " Proportion of respondents")+  
@@ -233,6 +227,6 @@ ggplot(aes(x = cane_walker_cat, y =proportion)) +
       labels = c("Yes","No")) + 
     scale_y_continuous(labels = scales::percent)
 
-  ggplotly(canewalker_plot)
+  ggplotly(cane_walker_wc_plot)
 ```
 
