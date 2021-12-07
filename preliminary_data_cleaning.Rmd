@@ -14,7 +14,19 @@ library(plotly)
 
 Using only round 5 data, included ID variable, the two variables needed for the depression risk scale (PHQ-2), gender, age, race, whether participant uses mobility devices, size of social network, whether or not they have no one to talk to, self reported memory issues causing problems, self-rated health, and whether they are happy with their living situation. 
 
-In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3), while scores provided in our data ranged from 1-4. Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
+In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3, while scores for the two items provided in our data ranged from 1-4). Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
+
+Categorical variables were recoded to include descriptions of values and converted into factors.
+
+The following variables will be included in analyses:
+
+* `gender`: Gender (Male, Female)
+* `age_cat`: Categorical age at interview (65 to 69, 70 to 74, 75 to 79, 80-84, 85-89, 90+)
+* `race_ethnicity`: Race and hispanic ethnicity (White, non-hispanic; Black, non-hispanic; Other, non-Hispanic; Hispanic)
+* `cane_walker_wheelchair`: Used cane, walker, wheelchair (Yes, No)
+* `memory`: Rate your memory (Excellent, Very Good, Good, Fair, Poor)
+* `overall_health`: Overall health condition (Excellent, Very Good, Good, Fair, Poor)
+* `likes_living_situation`: Likes living situation (Agree a lot, Agree a little, Agree not at all)
 
 ```{r nhats}
 nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
@@ -22,7 +34,7 @@ nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
          sn5dnumsn, cg5ratememry, hc5health, wb5truestme4, fl5noonetalk, cg5ofmemprob) %>%
   janitor::clean_names() %>%   
   filter(hc5depresan1 > 0, hc5depresan2 > 0, sn5dnumsn >= 0, r5d2intvrage > 0, md5canewlker > 0, 
-         sn5dnumsn > 0, cg5ratememry > 0, hc5health > 0, wb5truestme4 > 0)
+         cg5ratememry > 0, hc5health > 0, wb5truestme4 > 0, rl5dracehisp < 5)
 
 nhats %>% 
   select(hc5depresan1, hc5depresan2)  %>% 
@@ -33,14 +45,13 @@ nhats = nhats %>%
   mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression")) %>% 
   mutate(
     gender = recode(r5dgender, `1` = "Male", `2` = "Female"),
-    gender = as.factor(gender),
+    gender = factor(gender),
     age_cat = recode(r5d2intvrage, `1` = "65 to 69", `2` = "70 to 74", `3` = "75 to 79", 
-                 `4` = "80 to 84", `5` = "85 to 89", `6` = "80+"),
+                 `4` = "80 to 84", `5` = "85 to 89", `6` = "90+"),
     age_cat = factor(age_cat, levels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", 
-                  "85 to 89", "80+"), ordered = TRUE),
+                  "85 to 89", "90+"), ordered = TRUE),
     race_ethnicity = recode(rl5dracehisp, `1` = "White, non-hispanic", `2` = "Black, non-hispanic", 
-                  `3` = "Other, non-hispanic", `4` = "Hispanic", `5` = "More than one DKRF primary", 
-                  `6` = "DKRF"),
+                  `3` = "Other, non-hispanic", `4` = "Hispanic"),
     race_ethnicity = factor(race_ethnicity),
     cane_walker_wheelchair = recode(md5canewlker, `1` = "Yes", `2` = "No"),
     cane_walker_wheelchair = factor(cane_walker_wheelchair),
@@ -59,7 +70,7 @@ nhats = nhats %>%
 )
 ```
 
-Preliminary exploratory visualizations (need proper labels): 
+Preliminary exploratory visualizations: 
 # for gender - 1 male, 2 female 
 # for age categories - 1 65-69, 2 70-74, 5 75-79, 4 80 - 84, 5 85-89, 6 90+
 # for racehisp  - 1 white non-hispanic, 2 black non-hispanic, 3 other non-hispanic, 4, hispanic, 5 more than one/dkrf primary
@@ -68,10 +79,10 @@ Preliminary exploratory visualizations (need proper labels):
 
 gender_bar = 
   nhats  %>%   
-  count(r5dgender) %>% 
-  mutate(r5dgender = as.factor(r5dgender),
-         r5dgender = fct_reorder(r5dgender, n)) %>% 
-  plot_ly(x = ~r5dgender, y = ~n, color = ~r5dgender, type = "bar", colors = "viridis") %>% 
+  count(gender) %>% 
+  mutate(gender = as.factor(gender),
+         gender = fct_reorder(gender, n)) %>% 
+  plot_ly(x = ~gender, y = ~n, color = ~gender, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant gender", tickfont = list(size = 11)), 
          yaxis = list(title = "frequency"), 
@@ -81,11 +92,10 @@ gender_bar =
 
 age_bar = 
   nhats  %>%   
-  filter(r5d2intvrage > 0) %>% 
-  count(r5d2intvrage) %>% 
-  mutate(r5d2intvrage = as.factor(r5d2intvrage),
-         r5d2intvrage = fct_reorder(r5d2intvrage, n)) %>% 
-  plot_ly(x = ~r5d2intvrage, y = ~n, color = ~r5d2intvrage, type = "bar", colors = "viridis") %>% 
+  count(age_cat) %>% 
+  mutate(age_cat = as.factor(age_cat),
+         age_cat = fct_reorder(age_cat, n)) %>% 
+  plot_ly(x = ~age_cat, y = ~n, color = ~age_cat, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant age", tickfont = list(size = 11)), 
          yaxis = list(title = "frequency"), 
@@ -95,11 +105,10 @@ age_bar =
 
 race_bar = 
   nhats  %>%   
-  filter(rl5dracehisp > 0) %>% 
-  count(rl5dracehisp) %>% 
-  mutate(rl5dracehisp = as.factor(rl5dracehisp),
-         rl5dracehisp = fct_reorder(rl5dracehisp, n)) %>% 
-  plot_ly(x = ~rl5dracehisp, y = ~n, color = ~rl5dracehisp, type = "bar", colors = "viridis") %>% 
+  count(race_ethnicity) %>% 
+  mutate(race_ethnicity = as.factor(race_ethnicity),
+         race_ethnicity = fct_reorder(race_ethnicity, n)) %>% 
+  plot_ly(x = ~race_ethnicity, y = ~n, color = ~race_ethnicity, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant race/ethnicity", tickfont = list(size = 11)), 
          yaxis = list(title = "frequency"), 
@@ -118,43 +127,48 @@ demo_bar
 
 ```
 
-Attempting plotting of social network size predictor against PHQ-2, stratified by race (EM)
+Plotting of likes living situation predictor against PHQ-2, stratified by race (EM)
+#currently broken :( can anyone tell why?
 
-```{r nhats_prectict}
+```{r nhats_living_situation}
 
-sn_white = 
-  nhats %>%   filter(rl5dracehisp == 1 ) %>% 
-  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+ll_white = 
+  nhats %>%   
+  filter(race_ethnicity == 1 ) %>% 
+  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
           mode = "markers", marker = list(color = "red")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
-sn_black = 
-  nhats %>%   filter(rl5dracehisp == 2 ) %>% 
-  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+ll_black = 
+  nhats %>%   
+  filter(race_ethnicity == 2 ) %>% 
+  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
           mode = "markers", marker = list(color = "blue")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
-sn_other = 
-  nhats %>%   filter(rl5dracehisp == 3 ) %>% 
-  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+ll_other = 
+  nhats %>%   
+  filter(race_ethnicity == 3 ) %>% 
+  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
           mode = "markers", marker = list(color = "green")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
-sn_hisp = 
-  nhats %>%   filter(rl5dracehisp == 4 ) %>% 
-  plot_ly(x = ~jitter(sn5dnumsn, 1), y = ~jitter(phq.total, 1), color = ~sn5dnumsn, type = "scatter", 
+ll_hisp = 
+  nhats %>%   
+  filter(race_ethnicity == 4 ) %>% 
+  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
           mode = "markers", marker = list(color = "orange")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 
-snsize_scatter = subplot(sn_white, sn_black, sn_other, sn_hisp, nrows = 4) %>%
-  layout(xaxis4 = list(title = "social network size"), 
+ll_scatter = subplot(ll_white, ll_black, ll_other, ll_hisp, nrows = 4) %>%
+  layout(xaxis4 = list(title = "likes living situation"), 
          yaxis2 = list(title = "PHQ-2"),
-         title = list(text = "Social network size and PHQ-2 score distribution"), 
+         title = list(text = "Participant view of living situation and PHQ-2 score distribution"), 
          titlefont = list(size = 14),
          legend = list(font = list(size = 10)))
 
-snsize_scatter 
+ll_scatter 
 
 ```
 
