@@ -175,7 +175,7 @@ ll_scatter
 
 ```
 
-Plotting social network and health by phq_cat:
+Plotting social network (by race/gender/age_cat) and health by phq_cat:
 
 ```{r}
 sn_phq = nhats %>% 
@@ -195,7 +195,7 @@ health_phq = nhats %>%
     geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
     geom_text(aes( label = scales::percent(round(..prop.., 2)),
                    y = ..prop.. ), stat = "count", vjust = -2, size = 3) +
-    labs(y = "Percent", fill = "SN") +
+    labs(y = "Percent", fill = "Overall Health") +
     facet_grid(~phq_cat) +
     scale_y_continuous(labels = scales::percent)
 
@@ -248,7 +248,7 @@ cane_walker_wc_plot =
 ```
 
 
-### Logistic:
+### Multivariable Logistic Regression Model:
 
 ```{r}
 logit_model = nhats %>%
