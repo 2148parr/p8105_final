@@ -16,13 +16,13 @@ Using only round 5 data, included ID variable, the two variables needed for the 
 
 In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3), while scores provided in our data ranged from 1-4. Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
 
-
 ```{r nhats}
 nhats = read_sas("./final_data/nhats_r5.sas7bdat")  %>%
   select(spid, hc5depresan1, hc5depresan2, r5dgender, r5d2intvrage, rl5dracehisp, md5canewlker, 
-         sn5dnumsn, fl5noonetalk, cg5ofmemprob, hc5health, wb5truestme4) %>%
+         sn5dnumsn, cg5ratememry, hc5health, wb5truestme4, fl5noonetalk, cg5ofmemprob) %>%
   janitor::clean_names() %>%   
-  filter(hc5depresan1 > 0, hc5depresan2 > 0, sn5dnumsn >= 0)
+  filter(hc5depresan1 > 0, hc5depresan2 > 0, sn5dnumsn >= 0, r5d2intvrage > 0, md5canewlker > 0, 
+         sn5dnumsn > 0, cg5ratememry > 0, hc5health > 0, wb5truestme4 > 0)
 
 nhats %>% 
   select(hc5depresan1, hc5depresan2)  %>% 
@@ -33,7 +33,29 @@ nhats = nhats %>%
   mutate(phq_cat = if_else(phq.total < 3, "Mild/No Depression", "Moderate/Severe Depression")) %>% 
   mutate(
     gender = recode(r5dgender, `1` = "Male", `2` = "Female"),
-    gender = as.factor(gender)
+    gender = as.factor(gender),
+    age_cat = recode(r5d2intvrage, `1` = "65 to 69", `2` = "70 to 74", `3` = "75 to 79", 
+                 `4` = "80 to 84", `5` = "85 to 89", `6` = "80+"),
+    age_cat = factor(age_cat, levels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", 
+                  "85 to 89", "80+"), ordered = TRUE),
+    race_ethnicity = recode(rl5dracehisp, `1` = "White, non-hispanic", `2` = "Black, non-hispanic", 
+                  `3` = "Other, non-hispanic", `4` = "Hispanic", `5` = "More than one DKRF primary", 
+                  `6` = "DKRF"),
+    race_ethnicity = factor(race_ethnicity),
+    cane_walker_wheelchair = recode(md5canewlker, `1` = "Yes", `2` = "No"),
+    cane_walker_wheelchair = factor(cane_walker_wheelchair),
+    memory = recode(cg5ratememry, `1` = "Excellent", `2` = "Very Good", `3` = "Good", 
+                    `4` = "Fair", `5` = "Poor"),
+    memory = factor(memory, c("Excellent", "Very Good", "Good", "Fair", "Poor"), 
+                    ordered = TRUE),
+    overall_health = recode(hc5health, `1` = "Excellent", `2` = "Very Good", `3` = "Good", 
+                    `4` = "Fair", `5` = "Poor"),
+    overall_health = factor(overall_health, levels = c("Excellent", "Very Good", "Good", "Fair", 
+                    "Poor"), ordered = TRUE),
+    likes_living_situation = recode(wb5truestme4, `1` = "Agree a lot", `2` = "Agree a little", 
+                    `3` = "Agree not at all"),
+    likes_living_situation = factor(likes_living_situation, c("Agree a lot", "Agree a little", 
+                    "Agree not at all"), ordered = TRUE)
 )
 ```
 
