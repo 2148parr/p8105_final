@@ -131,35 +131,34 @@ demo_bar
 
 ```
 
-Plotting of likes living situation predictor against PHQ-2, stratified by race (EM)
-#currently broken :( can anyone tell why?
+Plotting of participant view of living situation predictor against PHQ-2, stratified by race (EM)
 
 ```{r nhats_living_situation}
 
 ll_white = 
   nhats %>%   
-  filter(rl5dracehisp == 1 ) %>% 
+  filter(race_ethnicity == "White, non-hispanic" ) %>% 
   plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "red")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_black = 
   nhats %>%   
-  filter(rl5dracehisp == 2 ) %>% 
+  filter(race_ethnicity == "Black, non-hispanic" ) %>% 
   plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "blue")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_other = 
   nhats %>%   
-  filter(rl5dracehisp == 3 ) %>% 
+  filter(race_ethnicity == "Other, non-hispanic" ) %>% 
   plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1),  type = "scatter", 
           mode = "markers", marker = list(color = "green")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_hisp = 
   nhats %>%   
-  filter(rl5dracehisp == 4 ) %>% 
+  filter(race_ethnicity == "Hispanic" ) %>% 
   plot_ly(x = c~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "orange")) %>% 
   layout(plot_bgcolor = "fffefa") 
@@ -173,7 +172,8 @@ ll_scatter = subplot(ll_white, ll_black, ll_other, ll_hisp, nrows = 4, shareX = 
     tickvals = list(1, 2, 3), 
          yaxis = list(title = "PHQ-2"),
          title = list(text = "Participant view of living situation and PHQ-2 score distribution"), 
-         titlefont = list(size = 14))
+         titlefont = list(size = 14),
+    showlegend=FALSE) # legend will have to be emulated with "annotations" indicating categories of each subplot
          
 ll_scatter 
 
