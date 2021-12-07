@@ -53,7 +53,7 @@ nhats = nhats %>%
     age_cat = recode(r5d2intvrage, `1` = "65 to 69", `2` = "70 to 74", `3` = "75 to 79", 
                  `4` = "80 to 84", `5` = "85 to 89", `6` = "90+"),
     age_cat = factor(age_cat, levels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", 
-                  "85 to 89", "90+"), ordered = TRUE),
+                  "85 to 89", "90+")),
     race_ethnicity = recode(rl5dracehisp, `1` = "White, non-hispanic", `2` = "Black, non-hispanic", 
                   `3` = "Other, non-hispanic", `4` = "Hispanic"),
     race_ethnicity = factor(race_ethnicity),
@@ -61,16 +61,15 @@ nhats = nhats %>%
     cane_walker_wheelchair = factor(cane_walker_wheelchair),
     memory = recode(cg5ratememry, `1` = "Excellent", `2` = "Very Good", `3` = "Good", 
                     `4` = "Fair", `5` = "Poor"),
-    memory = factor(memory, c("Excellent", "Very Good", "Good", "Fair", "Poor"), 
-                    ordered = TRUE),
+    memory = factor(memory, c("Excellent", "Very Good", "Good", "Fair", "Poor")),
     overall_health = recode(hc5health, `1` = "Excellent", `2` = "Very Good", `3` = "Good", 
                     `4` = "Fair", `5` = "Poor"),
     overall_health = factor(overall_health, levels = c("Excellent", "Very Good", "Good", "Fair", 
-                    "Poor"), ordered = TRUE),
+                    "Poor")),
     likes_living_situation = recode(wb5truestme4, `1` = "Agree a lot", `2` = "Agree a little", 
                     `3` = "Agree not at all"),
     likes_living_situation = factor(likes_living_situation, c("Agree a lot", "Agree a little", 
-                    "Agree not at all"), ordered = TRUE)
+                    "Agree not at all"))
 )
 ```
 
@@ -195,10 +194,10 @@ ggplotly(sn_phq)
 
 health_phq = nhats %>% 
   filter(hc5health > 0) %>%
-  ggplot(aes(x = hc5health, group = phq_cat)) + 
+  ggplot(aes(x = overall_health, group = phq_cat)) + 
     geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
-    geom_text(aes( label = scales::percent(round(..prop.., 3)),
-                   y = ..prop.. ), stat = "count", vjust = -.3, size = 2.5) +
+    geom_text(aes( label = scales::percent(round(..prop.., 2)),
+                   y = ..prop.. ), stat = "count", vjust = -2, size = 3) +
     labs(y = "Percent", fill = "SN") +
     facet_grid(~phq_cat) +
     scale_y_continuous(labels = scales::percent)
@@ -217,12 +216,12 @@ mem_plot = nhats %>%  group_by(phq_cat, memory) %>%
   proportion = (n / sum(n)))
 
   memory_plot = mem_plot %>% mutate(memory = factor(memory)) %>% drop_na() %>%   
-    ggplot(aes(x = memory, y = proportion, group= phq_cat)) + geom_line(alpha = 0.4) +
+    ggplot(aes(x = memory, y = proportion, group = phq_cat)) + geom_line(alpha = 0.4) +
   
     geom_point(alpha = 0.5, color = "red") + 
     facet_grid(~phq_cat) + 
     labs( title = "Self rated memory and depression outcomes",
-    x = "Self rated memory", y = " Proportion of respondents")+  
+    x = "Self rated memory", y = " Proportion of respondents") +  
     scale_y_continuous(labels = scales::percent)
   
 ggplotly(memory_plot)
@@ -250,4 +249,22 @@ cane_walker_wc_plot =
 
   ggplotly(cane_walker_wc_plot)
 ```
+
+
+### Logistic:
+
+```{r}
+logit_model = nhats %>%
+  mutate(phq_cat = if_else(phq_cat == "Mild/No Depression", 0, 1)) %>%
+  glm(phq_cat ~ gender + age_cat + race_ethnicity + cane_walker_wheelchair + memory + overall_health + likes_living_situation + sn5dnumsn, family = "binomial", data = .) 
+
+logit_model %>%
+  broom::tidy() %>%
+  mutate(OR = exp(estimate)) %>%
+  select(term, betas = estimate, OR, p.value) %>%
+  knitr::kable(digits = 3)
+
+```
+
+
 
