@@ -27,7 +27,7 @@ The following variables will be included in analyses:
 * `memory`: Rate your memory (Excellent, Very Good, Good, Fair, Poor)
 * `overall_health`: Overall health condition (Excellent, Very Good, Good, Fair, Poor)
 * `likes_living_situation`: Likes living situation (Agree a lot, Agree a little, Agree not at all)
-* `sn5dnumsn`: Social network size (0, 1, 2, 3, 4, 5)
+* `social_network_size`: Social network size (0, 1, 2, 3, 4, 5)
 
 The outcome variable of interest is:
 
@@ -70,8 +70,9 @@ nhats = nhats %>%
     likes_living_situation = recode(wb5truestme4, `1` = "Agree a lot", `2` = "Agree a little", 
                     `3` = "Agree not at all"),
     likes_living_situation = factor(likes_living_situation, c("Agree a lot", "Agree a little", 
-                    "Agree not at all"))
-)
+                    "Agree not at all")),
+    ) %>% 
+    rename(social_network_size = sn5dnumsn)
 ```
 
 Preliminary exploratory visualizations: 
@@ -179,7 +180,7 @@ Plotting social network (by race/gender/age_cat) and health by phq_cat:
 
 ```{r}
 sn_phq = nhats %>% 
-  ggplot(aes(x = sn5dnumsn, group = phq_cat)) + 
+  ggplot(aes(x = social_network_size, group = phq_cat)) + 
     geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
     geom_text(aes( label = scales::percent(round(..prop.., 3)),
                    y = ..prop.. ), stat = "count", vjust = -.3, size = 2.5) +
@@ -253,7 +254,7 @@ cane_walker_wc_plot =
 ```{r}
 logit_model = nhats %>%
   mutate(phq_cat = if_else(phq_cat == "Mild/No Depression", 0, 1)) %>%
-  glm(phq_cat ~ gender + age_cat + race_ethnicity + cane_walker_wheelchair + memory + overall_health + likes_living_situation + sn5dnumsn, family = "binomial", data = .) 
+  glm(phq_cat ~ gender + age_cat + race_ethnicity + cane_walker_wheelchair + memory + overall_health + likes_living_situation + social_network_size, family = "binomial", data = .) 
 
 logit_model %>%
   broom::tidy() %>%
