@@ -134,40 +134,43 @@ Plotting of likes living situation predictor against PHQ-2, stratified by race (
 
 ll_white = 
   nhats %>%   
-  filter(race_ethnicity == 1 ) %>% 
-  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
+  filter(rl5dracehisp == 1 ) %>% 
+  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "red")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_black = 
   nhats %>%   
-  filter(race_ethnicity == 2 ) %>% 
-  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
+  filter(rl5dracehisp == 2 ) %>% 
+  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "blue")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_other = 
   nhats %>%   
-  filter(race_ethnicity == 3 ) %>% 
-  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
+  filter(rl5dracehisp == 3 ) %>% 
+  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1),  type = "scatter", 
           mode = "markers", marker = list(color = "green")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_hisp = 
   nhats %>%   
-  filter(race_ethnicity == 4 ) %>% 
-  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), color = ~wb5truestme4, type = "scatter", 
+  filter(rl5dracehisp == 4 ) %>% 
+  plot_ly(x = c~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "orange")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 
-ll_scatter = subplot(ll_white, ll_black, ll_other, ll_hisp, nrows = 4) %>%
-  layout(xaxis4 = list(title = "likes living situation"), 
-         yaxis2 = list(title = "PHQ-2"),
+ll_scatter = subplot(ll_white, ll_black, ll_other, ll_hisp, nrows = 4, shareX = TRUE, shareY = TRUE) %>%
+  layout(xaxis = list(
+    title = "likes living situation", 
+    nticks = 3), 
+    ticktext = list("Agree a lot", "Agree a little", "Agree not at all"),
+    tickvals = list(1, 2, 3), 
+         yaxis = list(title = "PHQ-2"),
          title = list(text = "Participant view of living situation and PHQ-2 score distribution"), 
-         titlefont = list(size = 14),
-         legend = list(font = list(size = 10)))
-
+         titlefont = list(size = 14))
+         
 ll_scatter 
 
 ```
