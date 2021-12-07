@@ -27,6 +27,7 @@ The following variables will be included in analyses:
 * `memory`: Rate your memory (Excellent, Very Good, Good, Fair, Poor)
 * `overall_health`: Overall health condition (Excellent, Very Good, Good, Fair, Poor)
 * `likes_living_situation`: Likes living situation (Agree a lot, Agree a little, Agree not at all)
+* `sn5dnumsn`: Social network size (0, 1, 2, 3, 4, 5)
 
 The outcome variable of interest is:
 
