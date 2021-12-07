@@ -84,8 +84,7 @@ Preliminary exploratory visualizations:
 gender_bar = 
   nhats  %>%   
   count(gender) %>% 
-  mutate(gender = as.factor(gender),
-         gender = fct_reorder(gender, n)) %>% 
+  mutate(gender = fct_reorder(gender, n)) %>% 
   plot_ly(x = ~gender, y = ~n, color = ~gender, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant gender", tickfont = list(size = 11)), 
@@ -97,8 +96,6 @@ gender_bar =
 age_bar = 
   nhats  %>%   
   count(age_cat) %>% 
-  mutate(age_cat = as.factor(age_cat),
-         age_cat = fct_reorder(age_cat, n)) %>% 
   plot_ly(x = ~age_cat, y = ~n, color = ~age_cat, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant age", tickfont = list(size = 11)), 
@@ -110,8 +107,7 @@ age_bar =
 race_bar = 
   nhats  %>%   
   count(race_ethnicity) %>% 
-  mutate(race_ethnicity = as.factor(race_ethnicity),
-         race_ethnicity = fct_reorder(race_ethnicity, n)) %>% 
+  mutate(race_ethnicity = fct_reorder(race_ethnicity, n)) %>% 
   plot_ly(x = ~race_ethnicity, y = ~n, color = ~race_ethnicity, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant race/ethnicity", tickfont = list(size = 11)), 
