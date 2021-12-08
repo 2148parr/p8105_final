@@ -27,6 +27,7 @@ The following variables will be included in analyses:
 * `memory`: Rate your memory (Excellent, Very Good, Good, Fair, Poor)
 * `overall_health`: Overall health condition (Excellent, Very Good, Good, Fair, Poor)
 * `likes_living_situation`: Likes living situation (Agree a lot, Agree a little, Agree not at all)
+* `social_network_size`: Social network size (0, 1, 2, 3, 4, 5)
 
 The outcome variable of interest is:
 
@@ -53,7 +54,7 @@ nhats = nhats %>%
     age_cat = recode(r5d2intvrage, `1` = "65 to 69", `2` = "70 to 74", `3` = "75 to 79", 
                  `4` = "80 to 84", `5` = "85 to 89", `6` = "90+"),
     age_cat = factor(age_cat, levels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", 
-                  "85 to 89", "90+"), ordered = TRUE),
+                  "85 to 89", "90+")),
     race_ethnicity = recode(rl5dracehisp, `1` = "White, non-hispanic", `2` = "Black, non-hispanic", 
                   `3` = "Other, non-hispanic", `4` = "Hispanic"),
     race_ethnicity = factor(race_ethnicity),
@@ -61,17 +62,17 @@ nhats = nhats %>%
     cane_walker_wheelchair = factor(cane_walker_wheelchair),
     memory = recode(cg5ratememry, `1` = "Excellent", `2` = "Very Good", `3` = "Good", 
                     `4` = "Fair", `5` = "Poor"),
-    memory = factor(memory, c("Excellent", "Very Good", "Good", "Fair", "Poor"), 
-                    ordered = TRUE),
+    memory = factor(memory, c("Excellent", "Very Good", "Good", "Fair", "Poor")),
     overall_health = recode(hc5health, `1` = "Excellent", `2` = "Very Good", `3` = "Good", 
                     `4` = "Fair", `5` = "Poor"),
     overall_health = factor(overall_health, levels = c("Excellent", "Very Good", "Good", "Fair", 
-                    "Poor"), ordered = TRUE),
+                    "Poor")),
     likes_living_situation = recode(wb5truestme4, `1` = "Agree a lot", `2` = "Agree a little", 
                     `3` = "Agree not at all"),
     likes_living_situation = factor(likes_living_situation, c("Agree a lot", "Agree a little", 
-                    "Agree not at all"), ordered = TRUE)
-)
+                    "Agree not at all")),
+    ) %>% 
+    rename(social_network_size = sn5dnumsn)
 ```
 
 Preliminary exploratory visualizations: 
@@ -84,8 +85,7 @@ Preliminary exploratory visualizations:
 gender_bar = 
   nhats  %>%   
   count(gender) %>% 
-  mutate(gender = as.factor(gender),
-         gender = fct_reorder(gender, n)) %>% 
+  mutate(gender = fct_reorder(gender, n)) %>% 
   plot_ly(x = ~gender, y = ~n, color = ~gender, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant gender", tickfont = list(size = 11)), 
@@ -97,8 +97,6 @@ gender_bar =
 age_bar = 
   nhats  %>%   
   count(age_cat) %>% 
-  mutate(age_cat = as.factor(age_cat),
-         age_cat = fct_reorder(age_cat, n)) %>% 
   plot_ly(x = ~age_cat, y = ~n, color = ~age_cat, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant age", tickfont = list(size = 11)), 
@@ -110,8 +108,7 @@ age_bar =
 race_bar = 
   nhats  %>%   
   count(race_ethnicity) %>% 
-  mutate(race_ethnicity = as.factor(race_ethnicity),
-         race_ethnicity = fct_reorder(race_ethnicity, n)) %>% 
+  mutate(race_ethnicity = fct_reorder(race_ethnicity, n)) %>% 
   plot_ly(x = ~race_ethnicity, y = ~n, color = ~race_ethnicity, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
          xaxis = list(title = "participant race/ethnicity", tickfont = list(size = 11)), 
@@ -131,35 +128,34 @@ demo_bar
 
 ```
 
-Plotting of likes living situation predictor against PHQ-2, stratified by race (EM)
-#currently broken :( can anyone tell why?
+Plotting of participant view of living situation predictor against PHQ-2, stratified by race (EM)
 
 ```{r nhats_living_situation}
 
 ll_white = 
   nhats %>%   
-  filter(rl5dracehisp == 1 ) %>% 
+  filter(race_ethnicity == "White, non-hispanic" ) %>% 
   plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "red")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_black = 
   nhats %>%   
-  filter(rl5dracehisp == 2 ) %>% 
+  filter(race_ethnicity == "Black, non-hispanic" ) %>% 
   plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "blue")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_other = 
   nhats %>%   
-  filter(rl5dracehisp == 3 ) %>% 
+  filter(race_ethnicity == "Other, non-hispanic" ) %>% 
   plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1),  type = "scatter", 
           mode = "markers", marker = list(color = "green")) %>% 
   layout(plot_bgcolor = "fffefa") 
 
 ll_hisp = 
   nhats %>%   
-  filter(rl5dracehisp == 4 ) %>% 
+  filter(race_ethnicity == "Hispanic" ) %>% 
   plot_ly(x = c~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
           mode = "markers", marker = list(color = "orange")) %>% 
   layout(plot_bgcolor = "fffefa") 
@@ -173,17 +169,18 @@ ll_scatter = subplot(ll_white, ll_black, ll_other, ll_hisp, nrows = 4, shareX = 
     tickvals = list(1, 2, 3), 
          yaxis = list(title = "PHQ-2"),
          title = list(text = "Participant view of living situation and PHQ-2 score distribution"), 
-         titlefont = list(size = 14))
+         titlefont = list(size = 14),
+    showlegend=FALSE) # legend will have to be emulated with "annotations" indicating categories of each subplot
          
 ll_scatter 
 
 ```
 
-Plotting social network and health by phq_cat:
+Plotting social network (by race/gender/age_cat) and health by phq_cat:
 
 ```{r}
 sn_phq = nhats %>% 
-  ggplot(aes(x = sn5dnumsn, group = phq_cat)) + 
+  ggplot(aes(x = social_network_size, group = phq_cat)) + 
     geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
     geom_text(aes( label = scales::percent(round(..prop.., 3)),
                    y = ..prop.. ), stat = "count", vjust = -.3, size = 2.5) +
@@ -195,11 +192,11 @@ ggplotly(sn_phq)
 
 health_phq = nhats %>% 
   filter(hc5health > 0) %>%
-  ggplot(aes(x = hc5health, group = phq_cat)) + 
+  ggplot(aes(x = overall_health, group = phq_cat)) + 
     geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
-    geom_text(aes( label = scales::percent(round(..prop.., 3)),
-                   y = ..prop.. ), stat = "count", vjust = -.3, size = 2.5) +
-    labs(y = "Percent", fill = "SN") +
+    geom_text(aes( label = scales::percent(round(..prop.., 2)),
+                   y = ..prop.. ), stat = "count", vjust = -2, size = 3) +
+    labs(y = "Percent", fill = "Overall Health") +
     facet_grid(~phq_cat) +
     scale_y_continuous(labels = scales::percent)
 
@@ -217,12 +214,12 @@ mem_plot = nhats %>%  group_by(phq_cat, memory) %>%
   proportion = (n / sum(n)))
 
   memory_plot = mem_plot %>% mutate(memory = factor(memory)) %>% drop_na() %>%   
-    ggplot(aes(x = memory, y = proportion, group= phq_cat)) + geom_line(alpha = 0.4) +
+    ggplot(aes(x = memory, y = proportion, group = phq_cat)) + geom_line(alpha = 0.4) +
   
     geom_point(alpha = 0.5, color = "red") + 
     facet_grid(~phq_cat) + 
     labs( title = "Self rated memory and depression outcomes",
-    x = "Self rated memory", y = " Proportion of respondents")+  
+    x = "Self rated memory", y = " Proportion of respondents") +  
     scale_y_continuous(labels = scales::percent)
   
 ggplotly(memory_plot)
@@ -250,4 +247,22 @@ cane_walker_wc_plot =
 
   ggplotly(cane_walker_wc_plot)
 ```
+
+
+### Multivariable Logistic Regression Model:
+
+```{r}
+logit_model = nhats %>%
+  mutate(phq_cat = if_else(phq_cat == "Mild/No Depression", 0, 1)) %>%
+  glm(phq_cat ~ gender + age_cat + race_ethnicity + cane_walker_wheelchair + memory + overall_health + likes_living_situation + social_network_size, family = "binomial", data = .) 
+
+logit_model %>%
+  broom::tidy() %>%
+  mutate(OR = exp(estimate)) %>%
+  select(term, betas = estimate, OR, p.value) %>%
+  knitr::kable(digits = 3)
+
+```
+
+
 
