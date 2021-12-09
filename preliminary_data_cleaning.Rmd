@@ -127,19 +127,10 @@ ggplotly(living_plot)
 
 ```
 
-Plotting social network (by race/gender/age_cat) and health by phq_cat:
+#### Plotting perceived overall health by phq_cat:
+- The respondents were asked to rate their overall health on a scale from 1-5 with 1 being Excellent health and 5 being poor health. The graph below illustrates the proportion of respondents rating their overall health stratified by their depression outcome (PHQ-2) status. We can observe that respondents who scored as Mild/No depression recorded their perceived overall health within the Excellent to Good range while respondents with Moderate/Severe depression were more likely to report their overall health within the Good to Poor range. 
 
 ```{r}
-sn_phq = nhats %>% 
-  ggplot(aes(x = social_network_size, group = phq_cat)) + 
-    geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
-    geom_text(aes( label = scales::percent(round(..prop.., 3)),
-                   y = ..prop.. ), stat = "count", vjust = -.3, size = 2.5) +
-    labs(y = "Percent", fill = "SN") +
-    facet_grid(~phq_cat) +
-    scale_y_continuous(labels = scales::percent)
-
-ggplotly(sn_phq)
 
 health_phq = nhats %>% 
   filter(hc5health > 0) %>%
@@ -147,11 +138,20 @@ health_phq = nhats %>%
     geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
     geom_text(aes( label = scales::percent(round(..prop.., 2)),
                    y = ..prop.. ), stat = "count", vjust = -2, size = 3) +
-    labs(y = "Percent", fill = "Overall Health") +
+    labs(y = "Proportion of Respondents", x = "Perceived Overall Health", fill = "Overall Health") +
     facet_grid(~phq_cat) +
     scale_y_continuous(labels = scales::percent)
 
 ggplotly(health_phq)
+```
+
+#### Plotting social network (by race/gender/age_cat) and 
+
+```{r}
+sn_plot = nhats %>% group_by(phq_cat, social_network_size, age_cat) %>% 
+
+  
+ggplotly(sn_plot)
 ```
 
 
