@@ -75,10 +75,7 @@ nhats = nhats %>%
     rename(social_network_size = sn5dnumsn)
 ```
 
-Preliminary exploratory visualizations: 
-# for gender - 1 male, 2 female 
-# for age categories - 1 65-69, 2 70-74, 5 75-79, 4 80 - 84, 5 85-89, 6 90+
-# for racehisp  - 1 white non-hispanic, 2 black non-hispanic, 3 other non-hispanic, 4, hispanic, 5 more than one/dkrf primary
+Preliminary exploratory visualizations of the three demographic variables, gender, age, and race/ethnicity, to illustrate the frequencies per category. 
 
 ```{r nhats_demo}
 
@@ -86,24 +83,12 @@ gender_bar =
   nhats  %>%   
   count(gender) %>% 
   mutate(gender = fct_reorder(gender, n)) %>% 
-  plot_ly(x = ~gender, y = ~n, color = ~gender, type = "bar", colors = "viridis") %>% 
-  layout(plot_bgcolor = "f8f8f8",
-         xaxis = list(title = "participant gender", tickfont = list(size = 11)), 
-         yaxis = list(title = "frequency"), 
-         title = "Gender",  
-         titlefont = list(size = 16),
-         showlegend = FALSE)
+  plot_ly(x = ~gender, y = ~n, color = ~gender, type = "bar", colors = "viridis") 
 
 age_bar = 
   nhats  %>%   
   count(age_cat) %>% 
-  plot_ly(x = ~age_cat, y = ~n, color = ~age_cat, type = "bar", colors = "viridis") %>% 
-  layout(plot_bgcolor = "f8f8f8",
-         xaxis = list(title = "participant age", tickfont = list(size = 11)), 
-         yaxis = list(title = "frequency"), 
-         title = "Age",  
-         titlefont = list(size = 16),
-         showlegend = FALSE)
+  plot_ly(x = ~age_cat, y = ~n, color = ~age_cat, type = "bar", colors = "viridis") 
 
 race_bar = 
   nhats  %>%   
@@ -111,15 +96,13 @@ race_bar =
   mutate(race_ethnicity = fct_reorder(race_ethnicity, n)) %>% 
   plot_ly(x = ~race_ethnicity, y = ~n, color = ~race_ethnicity, type = "bar", colors = "viridis") %>% 
   layout(plot_bgcolor = "f8f8f8",
-         xaxis = list(title = "participant race/ethnicity", tickfont = list(size = 11)), 
-         yaxis = list(title = "frequency"), 
-         title = "Race/Ethnicity",  
+         xaxis = list(tickfont = list(size = 11)), 
          titlefont = list(size = 16),
          showlegend = FALSE)
 
 demo_bar = subplot(gender_bar, age_bar, race_bar, nrows = 3) %>%
-  layout(xaxis3 = list(title = "categories"), 
-         yaxis2 = list(title = "frequency"),
+  layout(xaxis3 = list(title = "Categories"), 
+         yaxis2 = list(title = "Frequency"),
          title = list(text = "Demographic frequencies"), 
          titlefont = list(size = 14),
          legend = list(font = list(size = 10)))
@@ -128,51 +111,19 @@ demo_bar
 
 ```
 
-Plotting of participant view of living situation predictor against PHQ-2, stratified by race (EM)
+Plotting of participant view of living situation predictor against PHQ-2, stratified by race (EM) to show the differences in PHQ-2 (depression risk scale) distribution across categories. 
 
 ```{r nhats_living_situation}
 
-ll_white = 
-  nhats %>%   
-  filter(race_ethnicity == "White, non-hispanic" ) %>% 
-  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
-          mode = "markers", marker = list(color = "red")) %>% 
-  layout(plot_bgcolor = "fffefa") 
+living_plot = nhats %>% 
+  ggplot(aes(x = likes_living_situation, y = phq.total, color = race_ethnicity)) + 
+  geom_point(position = "jitter", size = 0.5) + 
+  labs(title = "View of living situation and PHQ-2 score distribution",
+       x = "Likes living situation", y = "PHQ-2 score") + 
+  facet_grid(rows = vars(race_ethnicity)) + 
+  theme(legend.position = "none")
 
-ll_black = 
-  nhats %>%   
-  filter(race_ethnicity == "Black, non-hispanic" ) %>% 
-  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
-          mode = "markers", marker = list(color = "blue")) %>% 
-  layout(plot_bgcolor = "fffefa") 
-
-ll_other = 
-  nhats %>%   
-  filter(race_ethnicity == "Other, non-hispanic" ) %>% 
-  plot_ly(x = ~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1),  type = "scatter", 
-          mode = "markers", marker = list(color = "green")) %>% 
-  layout(plot_bgcolor = "fffefa") 
-
-ll_hisp = 
-  nhats %>%   
-  filter(race_ethnicity == "Hispanic" ) %>% 
-  plot_ly(x = c~jitter(wb5truestme4, 1), y = ~jitter(phq.total, 1), type = "scatter", 
-          mode = "markers", marker = list(color = "orange")) %>% 
-  layout(plot_bgcolor = "fffefa") 
-
-
-ll_scatter = subplot(ll_white, ll_black, ll_other, ll_hisp, nrows = 4, shareX = TRUE, shareY = TRUE) %>%
-  layout(xaxis = list(
-    title = "likes living situation", 
-    nticks = 3), 
-    ticktext = list("Agree a lot", "Agree a little", "Agree not at all"),
-    tickvals = list(1, 2, 3), 
-         yaxis = list(title = "PHQ-2"),
-         title = list(text = "Participant view of living situation and PHQ-2 score distribution"), 
-         titlefont = list(size = 14),
-    showlegend=FALSE) # legend will have to be emulated with "annotations" indicating categories of each subplot
-         
-ll_scatter 
+ggplotly(living_plot)
 
 ```
 
