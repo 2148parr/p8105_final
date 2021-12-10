@@ -147,6 +147,8 @@ nhats %>%
 
 #### Plotting social network by age_cat - stratified by gender and depression status 
 
+- The graph below shows the mean social network size for different age groups stratified by gender and depression risk. From the graphs we can observe that female respondents at a low risk of depression are much likely to have a greater social network size on average as compared to females with a higher risk for depression. We also observe that females, in general, have a greater social network group as compared to males, controlling for depression risk.
+
 ```{r}
 sn_plot = nhats %>% group_by(phq_cat, age_cat, gender) %>% 
   summarise(
