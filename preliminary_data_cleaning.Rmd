@@ -17,7 +17,7 @@ Using only round 5 data, included ID variable, the two variables needed for the 
 In creating dichotomous variable phq_cat regarding depression status, phq.total was subtracted by 2 to account for the fact that total scores on the PHQ-2 should range from 0-6 (sum of two items ranging from 0-3, while scores for the two items provided in our data ranged from 1-4). Once 2 was subtracted from the total score, phq_cat was dichotomized based on a cutoff point of 3 or higher.
 
 Categorical variables were recoded to include descriptions of values and converted into factors.
-
+ 
 The following variables will be included in analyses:
 
 * `gender`: Gender (Male, Female)
@@ -131,27 +131,35 @@ ggplotly(living_plot)
 - The respondents were asked to rate their overall health on a scale from 1-5 with 1 being Excellent health and 5 being poor health. The graph below illustrates the proportion of respondents rating their overall health stratified by their depression outcome (PHQ-2) status. We can observe that respondents who scored as Mild/No depression recorded their perceived overall health within the Excellent to Good range while respondents with Moderate/Severe depression were more likely to report their overall health within the Good to Poor range. 
 
 ```{r}
-
-health_phq = nhats %>% 
+nhats %>% 
   filter(hc5health > 0) %>%
   ggplot(aes(x = overall_health, group = phq_cat)) + 
     geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
     geom_text(aes( label = scales::percent(round(..prop.., 2)),
-                   y = ..prop.. ), stat = "count", vjust = -2, size = 3) +
+                   y = ..prop.. ), stat = "count", vjust = -0.5, size = 3) +
     labs(y = "Proportion of Respondents", x = "Perceived Overall Health", fill = "Overall Health") +
-    facet_grid(~phq_cat) +
-    scale_y_continuous(labels = scales::percent)
+    theme(legend.position = "none")  + theme(axis.text.x = element_text(angle = 30, vjust = 0.7)) +
+    facet_grid(~phq_cat) + scale_y_continuous(labels = scales::percent) + 
+    theme(panel.background = element_rect(fill = "white", colour = "grey50")) +
+    scale_fill_viridis_d()
 
-ggplotly(health_phq)
 ```
 
-#### Plotting social network (by race/gender/age_cat) and 
+#### Plotting social network by age_cat - stratified by gender and depression status 
 
 ```{r}
-sn_plot = nhats %>% group_by(phq_cat, social_network_size, age_cat) %>% 
-
-  
-ggplotly(sn_plot)
+sn_plot = nhats %>% group_by(phq_cat, age_cat, gender) %>% 
+  summarise(
+    mean = mean(social_network_size)
+  ) %>%
+  mutate(age_cat = factor(age_cat)) 
+         
+sn_plot %>%
+  ggplot(aes(x = age_cat, y = mean, group = gender, color = gender)) + 
+  geom_line(alpha = 0.5) + facet_grid(~phq_cat) + geom_point() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.7)) +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50")) +
+  labs(y = "Mean Social Network Size", x = "Age Groups") + scale_color_viridis_d(name = "Gender")
 ```
 
 
